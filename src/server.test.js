@@ -1,107 +1,67 @@
 const request = require("supertest");
 const express = require("express");
-const bodyParser = require("body-parser");
-const { Sequelize, DataTypes, Model } = require("sequelize");
-const Students = require("./students");
-const sequelize = require("./database");
+const studentsController = require("../src/students_controller");
+const Students = require("../src/students");
 
 const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use("/api/students", studentsController);
 
-app.get("/api/students", async (req, res) => {
-  try {
-    const students = await Students.findAll();
-    res.json(students);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch students" });
-  }
-});
-
-app.post("/api/students", async (req, res) => {
-  try {
-    await Students.create(req.body);
-    res.status(201).json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to add student" });
-  }
-});
-
-app.put("/api/students/:id", async (req, res) => {
-  try {
-    const student = await Students.findByPk(req.params.id);
-    if (!student) {
-      return res.status(404).json({ error: "Student not found" });
-    }
-    await Students.update(req.body, { where: { id: req.params.id } });
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to update student" });
-  }
-});
-
-app.delete("/api/students/:id", async (req, res) => {
-  try {
-    const student = await Students.findByPk(req.params.id);
-    if (!student) {
-      return res.status(404).json({ error: "Student not found" });
-    }
-    await Students.destroy({ where: { id: req.params.id } });
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to delete student" });
-  }
-});
+jest.mock("../src/students");
 
 describe("Students API", () => {
-  beforeAll(async () => {
-    await sequelize.sync({ force: true });
+  beforeEach(() => {
+    Students.findAll.mockClear();
+    Students.create.mockClear();
+    Students.findByPk.mockClear();
+    Students.update.mockClear();
+    Students.destroy.mockClear();
   });
 
-  afterAll(async () => {
-    await sequelize.close();
+  test("GET /api/students should return all students", async () => {
+    const students = [{ id: 1, name: "John Doe" }];
+    Students.findAll.mockResolvedValue(students);
+
+    const response = await request(app).get("/api/students");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(students);
   });
 
-  it("should fetch all students", async () => {
-    await Students.create({
+  test("POST /api/students should create a new student", async () => {
+    const newStudent = {
       name: "John Doe",
       gender: "male",
-      university: "Harvard",
-    });
-    const res = await request(app).get("/api/students");
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toBeGreaterThan(0);
+      university: "University",
+    };
+    Students.create.mockResolvedValue(newStudent);
+
+    const response = await request(app).post("/api/students").send(newStudent);
+    expect(response.status).toBe(201);
+    expect(response.body).toEqual({ success: true });
   });
 
-  it("should create a new student", async () => {
-    const res = await request(app)
-      .post("/api/students")
-      .send({ name: "Jane Doe", gender: "female", university: "MIT" });
-    expect(res.statusCode).toEqual(201);
-    expect(res.body.success).toBe(true);
+  test("PUT /api/students/:id should update a student", async () => {
+    const updatedStudent = {
+      name: "Jane Doe",
+      gender: "female",
+      university: "University",
+    };
+    Students.findByPk.mockResolvedValue(updatedStudent);
+    Students.update.mockResolvedValue([1]);
+
+    const response = await request(app)
+      .put("/api/students/1")
+      .send(updatedStudent);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ success: true });
   });
 
-  it("should update a student", async () => {
-    const student = await Students.create({
-      name: "John Doe",
-      gender: "male",
-      university: "Harvard",
-    });
-    const res = await request(app)
-      .put(`/api/students/${student.id}`)
-      .send({ name: "John Smith", gender: "male", university: "Harvard" });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.success).toBe(true);
-  });
+  test("DELETE /api/students/:id should delete a student", async () => {
+    Students.findByPk.mockResolvedValue({ id: 1 });
+    Students.destroy.mockResolvedValue(1);
 
-  it("should delete a student", async () => {
-    const student = await Students.create({
-      name: "John Doe",
-      gender: "male",
-      university: "Harvard",
-    });
-    const res = await request(app).delete(`/api/students/${student.id}`);
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.success).toBe(true);
+    const response = await request(app).delete("/api/students/1");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ success: true });
   });
 });
