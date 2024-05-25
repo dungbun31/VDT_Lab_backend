@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Route PUT to view more information of student by ID
+// Route GET to view more information of student by ID
 router.get("/:id", async (req, res) => {
   try {
     const student = await Students.findByPk(req.params.id);
