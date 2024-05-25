@@ -64,4 +64,13 @@ describe("Students API", () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ success: true });
   });
+
+  test("GET /api/students/:id should return a student by ID", async () => {
+    const student = { id: 1, name: "John Doe" };
+    Students.findByPk.mockResolvedValue(student);
+
+    const response = await request(app).get("/api/students/1");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(student);
+  });
 });
