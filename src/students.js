@@ -13,6 +13,10 @@ Students.init({
         type: DataTypes.STRING,
         allowNull: false
     },
+    age: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     gender: {
         type: DataTypes.ENUM('male', 'female'),
         allowNull: false
@@ -21,6 +25,10 @@ Students.init({
         type: DataTypes.STRING,
         allowNull: false
     },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
 }, {
     sequelize,
     modelName: 'students'
