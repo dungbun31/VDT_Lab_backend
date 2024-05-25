@@ -24,6 +24,20 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Route PUT to view more information of student by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const student = await Students.findByPk(req.params.id);
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+    res.json(student);
+  } catch (error) {
+    console.error("Error fetching student details:", error);
+    res.status(500).json({ error: "Failed to fetch student details" });
+  }
+});
+
 // Route PUT to update student by ID
 router.put("/:id", async (req, res) => {
   try {
