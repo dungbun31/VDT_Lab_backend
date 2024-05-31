@@ -28,7 +28,7 @@ jobs:
         run: npm test
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/cicd'
     runs-on: ubuntu-latest
 
     steps:
@@ -51,6 +51,6 @@ jobs:
           mkdir -p /home/${{ env.VPS_USER_NAME }}/deployed_project &&
           cd /home/${{ env.VPS_USER_NAME }}/deployed_project &&
           git remote set-url origin https://${{ env.GIT_USERNAME }}:${{ env.GIT_PASSWORD }}@github.com/${{ env.GIT_USERNAME }}/hw6_backend.git &&
-          git pull origin main &&
+          git pull origin cicd &&
           sudo docker-compose up --build -d &&
           echo 'Deployment completed!'"
