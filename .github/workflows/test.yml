@@ -50,7 +50,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ env.VPS_USER_NAME }}@${{ env.VPS_SERVER_NAME }} "
           mkdir -p /home/${{ env.VPS_USER_NAME }}/deployed_project &&
           cd /home/${{ env.VPS_USER_NAME }}/deployed_project &&
-          git remote set-url origin https://${{ env.GIT_USERNAME }}:${{ env.GIT_PASSWORD }}@github.com/${{ env.GIT_USERNAME }}/hw6_backend.git &&
+          git remote set-url origin https://${{ env.GIT_USERNAME }}:${{ env.GIT_PASSWORD }}@github.com/${{ env.GIT_USERNAME }}/VDT_Lab_backend.git &&
           git pull origin cicd &&
           sudo docker-compose up --build -d &&
           echo 'Deployment completed!'"
