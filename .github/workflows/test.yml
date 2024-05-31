@@ -1,4 +1,4 @@
-name: Run Unit Tests
+name: CI/CD Pipeline
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - main
   push:
     branches:
-      - main
+      - cicd
 
 jobs:
   test:
@@ -26,3 +26,31 @@ jobs:
 
       - name: Run unit tests
         run: npm test
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.VPS_PRIVATE_KEY }}
+
+      - name: Deploy to server
+        env:
+          VPS_SERVER_NAME: ${{ secrets.VPS_SERVER_NAME }}
+          VPS_USER_NAME: ${{ secrets.VPS_USER_NAME }}
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ env.VPS_USER_NAME }}@${{ env.VPS_SERVER_NAME }} "
+          mkdir -p /home/${{ env.VPS_USER_NAME }}/deployed_project &&
+          cd /home/${{ env.VPS_USER_NAME }}/deployed_project &&
+          git remote set-url origin https://${{ env.GIT_USERNAME }}:${{ env.GIT_PASSWORD }}@github.com/${{ env.GIT_USERNAME }}/hw6_backend.git &&
+          git pull origin main &&
+          sudo docker-compose up --build -d &&
+          echo 'Deployment completed!'"
