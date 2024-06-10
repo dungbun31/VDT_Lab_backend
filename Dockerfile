@@ -7,6 +7,8 @@ RUN npm install
 
 COPY . .
 
+RUN npm run build-src
+
 FROM node:alpine
 
 WORKDIR /app
@@ -14,4 +16,6 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app .
 
-CMD ["npm", "run", "dev"]
+EXPOSE 6868
+
+CMD ["npm", "run", "build"]
