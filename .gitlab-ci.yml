@@ -37,7 +37,7 @@ build:
     reports:
       dotenv: .env
 
-update-config:
+deploy:
   stage: deploy
   script:
     - export $(cat .env | xargs)
