@@ -7,6 +7,7 @@ const studentsController = require("./students_controller");
 
 var corsOptions = {
   origin: process.env.CLIENT_ORIGIN || "http://localhost:8080",
+  origin: "http://localhost:8888",
 };
 
 app.use(cors(corsOptions));
