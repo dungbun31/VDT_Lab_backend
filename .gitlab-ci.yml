@@ -11,7 +11,7 @@ before_script:
 build:
   stage: build
   script:
-    - >
+    - |
       # Fetch current tags from Docker Hub
       TAGS=$(curl -s -u "$DOCKER_USERNAME:$DOCKER_PASSWORD" "https://hub.docker.com/v2/repositories/$DOCKER_IMAGE/tags" | jq '.count')
       echo "Current tags count: $TAGS"
@@ -33,12 +33,12 @@ update-config:
   stage: deploy
   script:
     - export $(cat .env | xargs)
-    - git clone https://$GITLAB_USERNAME:$GITLAB_PASSWORD@gitlab.com/your-namespace/ks8-config-api.git
+    - git clone https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/dungbun31/ks8-config-api.git
     - cd ks8-config-api
     - |
       sed -i "s/tag: .*/tag: '$NEW_TAG'/" values.yaml
-    - git config --global user.email "gitlab-ci@your-domain.com"
-    - git config --global user.name "GitLab CI"
+    - git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    - git config --global user.name "github-actions[bot]"
     - git add values.yaml
     - git commit -m "Update image tag to $NEW_TAG"
     - git push origin main
