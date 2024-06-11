@@ -44,6 +44,8 @@ update-config:
     - git clone https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/dungbun31/ks8-config-api.git
     - cd ks8-config-api
     - |
+      echo "New tag: $NEW_TAG"
+    - |
       sed -i "s/tag: .*/tag: '$NEW_TAG'/" values.yaml
     - git config --global user.email "gitlab-ci@your-domain.com"
     - git config --global user.name "GitLab CI"
