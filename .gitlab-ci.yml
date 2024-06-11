@@ -67,7 +67,7 @@ variables:
 image: docker:latest
 
 services:
-  - docker:19.03.12-dind
+  - docker:26.1-dind
 
 before_script:
   - apk add --no-cache curl jq
@@ -103,8 +103,8 @@ deploy:
     - cd ks8-config-api
     - |
       echo "New tag: $NEW_TAG"
-    - |
-      sed -i "s/tag: '[^']*'/tag: '$NEW_TAG'/" values.yaml
+    - pip3 install -r requirements.txt
+    - python3 config.py
     - git config --global user.email "gitlab-ci@your-domain.com"
     - git config --global user.name "GitLab CI"
     - git add values.yaml
