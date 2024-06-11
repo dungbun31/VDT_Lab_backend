@@ -19,9 +19,15 @@ jobs:
       - name: Fetch current tags from Docker Hub
         id: fetch-tags
         run: |
-          response=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/{{ secrets.DOCKER_IMAGE }}/tags")
+          REPO_NAME=${{ secrets.DOCKER_IMAGE }}
+          USER_NAME=${{ secrets.DOCKER_USERNAME }}
+          response=$(curl -s -u "$USER_NAME:${{ secrets.DOCKER_PASSWORD }}" "https://hub.docker.com/v2/repositories/$USER_NAME/$REPO_NAME/tags")
           echo "Response from Docker Hub: $response"
           TAGS=$(echo $response | jq '.count')
+          if [ -z "$TAGS" ]; then
+            echo "Failed to fetch tags"
+            exit 1
+          fi
           echo "::set-output name=tag_count::$TAGS"
 
       - name: Build Docker image
