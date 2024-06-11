@@ -21,7 +21,7 @@ jobs:
         run: |
           REPO_NAME=${{ secrets.DOCKER_IMAGE }}
           USER_NAME=${{ secrets.DOCKER_USERNAME }}
-          response=$(curl -s -u "$USER_NAME:${{ secrets.DOCKER_PASSWORD }}" "https://hub.docker.com/v2/repositories/$USER_NAME/$REPO_NAME/tags")
+          response=$(curl -s -u "$USER_NAME:${{ secrets.DOCKER_PASSWORD }}" "https://hub.docker.com/v2/repositories/$REPO_NAME/tags")
           echo "Response from Docker Hub: $response"
           TAGS=$(echo $response | jq '.count')
           if [ -z "$TAGS" ]; then
@@ -32,9 +32,8 @@ jobs:
 
       - name: Build Docker image
         env:
-          NEW_TAG: ${{ steps.fetch-tags.outputs.tag_count }}
+          NEW_TAG: $(( $(echo ${{ steps.fetch-tags.outputs.tag_count }}) + 1 ))
         run: |
-          NEW_TAG=$((NEW_TAG + 1))
           docker build -t ${{ secrets.DOCKER_IMAGE }}:$NEW_TAG .
           docker push ${{ secrets.DOCKER_IMAGE }}:$NEW_TAG
           echo "::set-output name=new_tag::$NEW_TAG"
@@ -55,6 +54,7 @@ jobs:
         run: |
           cd ks8-config-api
           sed -i "s/tag: .*/tag: '${{ needs.build.outputs.new_tag }}'/" values.yaml
+          sed -i "/image:/!b;n;c\  tag: '${{ needs.build.outputs.new_tag }}'" values.yaml
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add values.yaml
