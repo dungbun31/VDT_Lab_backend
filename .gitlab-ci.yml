@@ -11,6 +11,7 @@ services:
   - docker:19.03.12-dind
 
 before_script:
+  - apk add --no-cache curl jq
   - docker info
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
