@@ -103,8 +103,8 @@ deploy:
     - cd ks8-config-api
     - |
       echo "New tag: $NEW_TAG"
-    - pip3 install -r requirements.txt
-    - python3 config.py
+    - pip install -r requirements.txt
+    - python config.py
     - git config --global user.email "gitlab-ci@your-domain.com"
     - git config --global user.name "GitLab CI"
     - git add values.yaml
