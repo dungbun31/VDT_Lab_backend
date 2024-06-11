@@ -4,12 +4,14 @@ stages:
 
 variables:
   DOCKER_IMAGE: "dungxbuns/vdt-lab-backend"
-  DOCKER_DRIVER: overlay2
+
+image: docker:19.03.12
 
 services:
-  - docker:19.03.12
+  - docker:19.03.12-dind
 
 before_script:
+  - docker info
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
 build:
@@ -41,11 +43,10 @@ update-config:
     - cd ks8-config-api
     - |
       sed -i "s/tag: .*/tag: '$NEW_TAG'/" values.yaml
-    - git config --global user.email "github-actions[bot]@users.noreply.github.com"
-    - git config --global user.name "github-actions[bot]"
+    - git config --global user.email "gitlab-ci@your-domain.com"
+    - git config --global user.name "GitLab CI"
     - git add values.yaml
     - git commit -m "Update image tag to $NEW_TAG"
     - git push origin main
   only:
     - main
-
