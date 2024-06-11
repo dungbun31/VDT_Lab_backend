@@ -1,5 +1,4 @@
 # Node.js CRUD Rest APIs
-ádasdsadasdasdasddfgfdgdfgfd
 ## Project setup
 ```
 npm install
