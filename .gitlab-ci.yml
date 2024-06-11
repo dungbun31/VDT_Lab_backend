@@ -70,7 +70,8 @@ services:
   - docker:19.03.12-dind
 
 before_script:
-  - apk add --no-cache curl jq
+  - apt-get update
+  - apt-get install -y curl jq docker.io python3-pip
   - docker info
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
@@ -111,4 +112,4 @@ deploy:
     - git commit -m "Update image tag to $NEW_TAG"
     - git push origin main
   only:
-    - main
+    - develop
