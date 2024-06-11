@@ -1,3 +1,67 @@
+# stages:
+#   - build
+#   - deploy
+
+# variables:
+#   DOCKER_IMAGE: "dungxbuns/vdt-lab-backend"
+#   DOCKER_TLS_CERTDIR: ""
+
+# image: ubuntu:18.04
+
+# services:
+#   - docker:19.03.12-dind
+
+# before_script:
+#   - apt-get update
+#   - apt-get install -y curl jq python3-pip apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+#   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+#   - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+#   - apt-get update
+#   - apt-get install -y docker-ce docker-ce-cli containerd.io
+#   - service docker start
+#   - docker info
+#   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+
+# build:
+#   stage: build
+#   script:
+#     - |
+#       # Fetch current tags from Docker Hub
+#       TAGS=$(curl -s -u "$DOCKER_USERNAME:$DOCKER_PASSWORD" "https://hub.docker.com/v2/repositories/$DOCKER_IMAGE/tags" | jq '.count')
+#       echo "Current tags count: $TAGS"
+      
+#       # Calculate new tag
+#       NEW_TAG="v$((TAGS + 1))"
+#       echo "New tag: $NEW_TAG"
+
+#       # Build and push Docker image
+#       docker build -t $DOCKER_IMAGE:$NEW_TAG .
+#       docker push $DOCKER_IMAGE:$NEW_TAG
+#       echo "NEW_TAG=$NEW_TAG" > .env
+
+#   artifacts:
+#     reports:
+#       dotenv: .env
+
+# deploy:
+#   stage: deploy
+#   script:
+#     - export $(cat .env | xargs)
+#     - git clone https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/dungbun31/ks8-config-api.git
+#     - cd ks8-config-api
+#     - |
+#       echo "New tag: $NEW_TAG"
+#     - pip3 install -r requirements.txt
+#     - python3 config.py
+#     - git config --global user.email "gitlab-ci@your-domain.com"
+#     - git config --global user.name "GitLab CI"
+#     - git add values.yaml
+#     - git commit -m "Update image tag to $NEW_TAG"
+#     - git push origin main
+#   only:
+#     - develop
+
+
 stages:
   - build
   - deploy
@@ -6,19 +70,16 @@ variables:
   DOCKER_IMAGE: "dungxbuns/vdt-lab-backend"
   DOCKER_TLS_CERTDIR: ""
 
-image: ubuntu:18.04
+image: docker:latest
 
 services:
   - docker:19.03.12-dind
 
 before_script:
   - apt-get update
-  - apt-get install -y curl jq python3-pip apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - apt-get update
-  - apt-get install -y docker-ce docker-ce-cli containerd.io
-  - service docker start
+  - apt-get install -y curl jq
+  - curl -fsSL https://get.docker.com -o get-docker.sh
+  - sh get-docker.sh
   - docker info
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
@@ -26,6 +87,16 @@ build:
   stage: build
   script:
     - |
+      # Cài đặt Buildx
+      mkdir -p ~/.docker/cli-plugins/
+      curl -Lo ~/.docker/cli-plugins/docker-buildx https://github.com/docker/buildx/releases/latest/download/buildx-linux-amd64
+      chmod +x ~/.docker/cli-plugins/docker-buildx
+      docker buildx version
+
+      # Thiết lập Buildx
+      docker buildx create --use
+      docker buildx inspect --bootstrap
+
       # Fetch current tags from Docker Hub
       TAGS=$(curl -s -u "$DOCKER_USERNAME:$DOCKER_PASSWORD" "https://hub.docker.com/v2/repositories/$DOCKER_IMAGE/tags" | jq '.count')
       echo "Current tags count: $TAGS"
@@ -34,9 +105,8 @@ build:
       NEW_TAG="v$((TAGS + 1))"
       echo "New tag: $NEW_TAG"
 
-      # Build and push Docker image
-      docker build -t $DOCKER_IMAGE:$NEW_TAG .
-      docker push $DOCKER_IMAGE:$NEW_TAG
+      # Build and push Docker image for multiple architectures
+      docker buildx build --platform linux/amd64,linux/arm64 -t $DOCKER_IMAGE:$NEW_TAG --push .
       echo "NEW_TAG=$NEW_TAG" > .env
 
   artifacts:
@@ -51,12 +121,12 @@ deploy:
     - cd ks8-config-api
     - |
       echo "New tag: $NEW_TAG"
-    - pip3 install -r requirements.txt
-    - python3 config.py
+    - pip install -r requirements.txt
+    - python config.py
     - git config --global user.email "gitlab-ci@your-domain.com"
     - git config --global user.name "GitLab CI"
     - git add values.yaml
     - git commit -m "Update image tag to $NEW_TAG"
     - git push origin main
   only:
-    - develop
+    - main

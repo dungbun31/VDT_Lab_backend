@@ -8,9 +8,10 @@ services:
   api:
     depends_on:
       - db
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: dungxbuns/vdt-lab-backend:v15
     env_file:
       - ./.env
     environment:
