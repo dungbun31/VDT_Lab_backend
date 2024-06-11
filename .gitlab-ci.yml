@@ -64,10 +64,10 @@ variables:
   DOCKER_IMAGE: "dungxbuns/vdt-lab-backend"
   DOCKER_TLS_CERTDIR: ""
 
-image: python:3.8
+image: ubuntu:20.04
 
 services:
-  - docker:26.1-dind
+  - docker:19.03.12-dind
 
 before_script:
   - apk add --no-cache curl jq
