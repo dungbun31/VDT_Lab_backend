@@ -11,9 +11,18 @@ services:
   - docker:19.03.12-dind
 
 before_script:
-  - apk add --no-cache curl jq
+  - apk add --no-cache curl jq libcgroup-tools
   - docker info
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+  - |
+    mkdir -p /sys/fs/cgroup/cpu
+    mount -t cgroup -o cpu none /sys/fs/cgroup/cpu
+    mkdir -p /sys/fs/cgroup/cpuacct
+    mount -t cgroup -o cpuacct none /sys/fs/cgroup/cpuacct
+    mkdir -p /sys/fs/cgroup/memory
+    mount -t cgroup -o memory none /sys/fs/cgroup/memory
+    mkdir -p /sys/fs/cgroup/devices
+    mount -t cgroup -o devices none /sys/fs/cgroup/devices
 
 build:
   stage: build
