@@ -19,7 +19,9 @@ jobs:
       - name: Fetch current tags from Docker Hub
         id: fetch-tags
         run: |
-          TAGS=$(curl -s -u ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_IMAGE }}/tags" | jq '.results | length')
+          response=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/{{ secrets.DOCKER_IMAGE }}/tags")
+          echo "Response from Docker Hub: $response"
+          TAGS=$(echo $response | jq '.count')
           echo "::set-output name=tag_count::$TAGS"
 
       - name: Build Docker image
