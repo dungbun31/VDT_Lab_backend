@@ -3,7 +3,7 @@ name: CD Pipeline
 on:
   push:
     branches:
-      - develop
+      - main
 
 jobs:
   build:
@@ -32,8 +32,9 @@ jobs:
 
       - name: Build Docker image
         env:
-          NEW_TAG: 50
+          TAG_COUNT: ${{ steps.fetch-tags.outputs.tag_count }}
         run: |
+          NEW_TAG="v$((TAG_COUNT + 1))"
           echo "New tag: $NEW_TAG"
           docker build -t ${{ secrets.DOCKER_IMAGE }}:$NEW_TAG .
           docker push ${{ secrets.DOCKER_IMAGE }}:$NEW_TAG
@@ -55,7 +56,6 @@ jobs:
         run: |
           cd ks8-config-api
           sed -i "s/tag: .*/tag: '${{ needs.build.outputs.new_tag }}'/" values.yaml
-          sed -i "/image:/!b;n;c\  tag: '${{ needs.build.outputs.new_tag }}'" values.yaml
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add values.yaml
