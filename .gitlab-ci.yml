@@ -64,7 +64,7 @@ variables:
   DOCKER_IMAGE: "dungxbuns/vdt-lab-backend"
   DOCKER_TLS_CERTDIR: ""
 
-image: docker:latest
+image: python:3.8
 
 services:
   - docker:26.1-dind
@@ -103,8 +103,8 @@ deploy:
     - cd ks8-config-api
     - |
       echo "New tag: $NEW_TAG"
-    - pip install -r requirements.txt
-    - python config.py
+    - pip3 install -r requirements.txt
+    - python3 config.py
     - git config --global user.email "gitlab-ci@your-domain.com"
     - git config --global user.name "GitLab CI"
     - git add values.yaml
