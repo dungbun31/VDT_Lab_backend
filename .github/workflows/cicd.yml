@@ -32,7 +32,7 @@ jobs:
 
       - name: Build Docker image
         env:
-          NEW_TAG: (( $(echo ${{ steps.fetch-tags.outputs.tag_count }}) + 1 ))
+          NEW_TAG: 50
         run: |
           echo "New tag: $NEW_TAG"
           docker build -t ${{ secrets.DOCKER_IMAGE }}:$NEW_TAG .
