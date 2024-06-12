@@ -16,7 +16,7 @@ spec:
       - name: postgresql
         image: "{{ .Values.postgresql.image.registry }}/{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
         ports:
-        - containerPort: {{ .Values.postgresql.service.port }}
+        - containerPort: 5432
         env:
         - name: POSTGRES_USER
           valueFrom:

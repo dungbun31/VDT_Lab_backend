@@ -20,7 +20,7 @@ spec:
         - containerPort: 8080 
         env:
         - name: DB_HOST
-          value: "postgresql"
+          value: postgresql
         - name: DB_USER
           valueFrom:
             secretKeyRef:
@@ -38,5 +38,3 @@ spec:
               key: DB_NAME
         - name: DB_PORT
           value: "5432"
-        - name: CLIENT_ORIGIN
-          value: "$CLIENT_ORIGIN"
