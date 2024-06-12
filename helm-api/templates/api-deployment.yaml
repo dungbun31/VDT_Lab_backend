@@ -80,15 +80,15 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
       - name: {{ include "helm-api.name" . }}
-        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.api.image.registry }}/{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+        imagePullPolicy: {{ .Values.api.image.pullPolicy }}
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
         ports:
-        - containerPort: {{ .Values.service.port }}
+        - containerPort: {{ .Values.api.service.port }}
         env:
         - name: DB_HOST
-          value: {{ .Values.postgresql.service.name }}
+          value: {{ .Values.db.service.name | default "postgresql" }}
         - name: DB_USER
           valueFrom:
             secretKeyRef:
@@ -120,10 +120,10 @@ kind: Service
 metadata:
   name: {{ include "helm-api.fullname" . }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.api.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.api.service.port }}
       targetPort: 6868
-      nodePort: {{ .Values.service.nodePort }}
+      nodePort: {{ .Values.api.service.nodePort }}
   selector:
     app: {{ include "helm-api.name" . }}
