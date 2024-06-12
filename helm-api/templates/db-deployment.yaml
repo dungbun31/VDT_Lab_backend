@@ -13,26 +13,26 @@ spec:
         app: postgresql
     spec:
       containers:
-        - name: postgresql
-          image: "{{ .Values.postgresql.image.registry }}/{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
-          ports:
-            - containerPort: { { .Values.postgresql.service.port } }
-          env:
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: DB_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: DB_PASS
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: DB_NAME
+      - name: postgresql
+        image: "{{ .Values.db.image.registry }}/{{ .Values.db.image.repository }}:{{ .Values.db.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.db.service.port }}
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: api-secrets
+              key: DB_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: api-secrets
+              key: DB_PASS
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: api-secrets
+              key: DB_NAME
 ---
 apiVersion: v1
 kind: Service
