@@ -18,4 +18,4 @@ COPY --from=builder /app .
 
 EXPOSE 6868
 
-CMD ["npm", "run", "build"]
+CMD ["npm", "run", "dev"]

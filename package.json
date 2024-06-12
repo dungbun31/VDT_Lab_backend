@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec babel-node src/server.js",
+    "dev": "nodemon src/server.js",
     "test": "jest",
     "build-src": "babel src -d build --copy-files",
     "build": "node build/server.js"

@@ -17,10 +17,10 @@ spec:
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: {{ .Values.service.port }}
+        - containerPort: 8080 
         env:
         - name: DB_HOST
-          value: {{ .Values.postgresql.service.name }}
+          value: "postgresql"
         - name: DB_USER
           valueFrom:
             secretKeyRef:
@@ -38,3 +38,5 @@ spec:
               key: DB_NAME
         - name: DB_PORT
           value: "5432"
+        - name: CLIENT_ORIGIN
+          value: "$CLIENT_ORIGIN"
