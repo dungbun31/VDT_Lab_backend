@@ -17,8 +17,10 @@
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
+    "express-prometheus-middleware": "^1.2.0",
     "pg": "^8.11.5",
     "postgres": "^3.4.4",
+    "prom-client": "^13.2.0",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {
