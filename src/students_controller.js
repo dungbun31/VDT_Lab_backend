@@ -1,9 +1,6 @@
-const express = require("express");
-const router = express.Router();
 const Students = require("./students");
 
-// Route GET to fetch all students
-router.get("/", async (req, res) => {
+const findAll = async (req, res) => {
   try {
     const students = await Students.findAll();
     res.json(students);
@@ -11,10 +8,9 @@ router.get("/", async (req, res) => {
     console.error("Error fetching students:", error);
     res.status(500).json({ error: "Failed to fetch students" });
   }
-});
+};
 
-// Route POST to create a new student
-router.post("/", async (req, res) => {
+const create = async (req, res) => {
   try {
     await Students.create(req.body);
     res.status(201).json({ success: true });
@@ -22,10 +18,9 @@ router.post("/", async (req, res) => {
     console.error("Error adding student:", error);
     res.status(500).json({ error: "Failed to add student" });
   }
-});
+};
 
-// Route GET to view more information of student by ID
-router.get("/:id", async (req, res) => {
+const findById = async (req, res) => {
   try {
     const student = await Students.findByPk(req.params.id);
     if (!student) {
@@ -36,10 +31,9 @@ router.get("/:id", async (req, res) => {
     console.error("Error fetching student details:", error);
     res.status(500).json({ error: "Failed to fetch student details" });
   }
-});
+};
 
-// Route PUT to update student by ID
-router.put("/:id", async (req, res) => {
+const update = async (req, res) => {
   try {
     const student = await Students.findByPk(req.params.id);
     if (!student) {
@@ -51,10 +45,9 @@ router.put("/:id", async (req, res) => {
     console.error("Error updating student:", error);
     res.status(500).json({ error: "Failed to update student" });
   }
-});
+};
 
-// Route DELETE to delete student by ID
-router.delete("/:id", async (req, res) => {
+const deleteById = async (req, res) => {
   try {
     const student = await Students.findByPk(req.params.id);
     if (!student) {
@@ -66,6 +59,6 @@ router.delete("/:id", async (req, res) => {
     console.error("Error deleting student:", error);
     res.status(500).json({ error: "Failed to delete student" });
   }
-});
+};
 
-module.exports = router;
+module.exports = { findAll, create, findById, update, deleteById };

@@ -1,37 +1,40 @@
-const sequelize = require('./database');
-const { Model, DataTypes } = require('sequelize');
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("./database");
 
-class Students extends Model { }
+class Students extends Model {}
 
-Students.init({
+Students.init(
+  {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
     name: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     age: {
-        type: DataTypes.INTEGER,
-        allowNull: false
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     gender: {
-        type: DataTypes.ENUM('male', 'female'),
-        allowNull: false
+      type: DataTypes.ENUM("male", "female"),
+      allowNull: false,
     },
     university: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     email: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }
-}, {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
     sequelize,
-    modelName: 'students'
-})
+    modelName: "students",
+  }
+);
 
-module.exports = Students
+module.exports = Students;
